@@ -1,0 +1,65 @@
+extends layout
+
+block content
+  img(src='./images/logo.jpeg' , alt='logo' id='logo')
+  p
+  div(id="mapid")
+
+  script.
+
+    async function getLocations() {
+      const points = await  fetch('https://eonet.sci.gsfc.nasa.gov/api/v2.1/events').then((resp) => resp.json()).then(function (data) {
+        return data
+      })
+
+      const coord = points.events.map(p => {
+        return p
+      })
+      return coord
+
+    }
+
+    async function plot() {
+       await getLocations().then(
+          coord => {
+            renderMap(coord)
+          }
+       )
+    }
+
+    plot()
+
+
+    function renderMap(coord) {
+      var mymap = L.map('mapid').setView([0, 0], 3);
+
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        maxZoom: 18,
+        id: 'mapbox.streets'
+      }).addTo(mymap);
+
+      coord.forEach(c => {
+        if (c.geometries[0].type === 'Point') {
+          console.log([c.geometries[0].coordinates[1], c.geometries[0].coordinates[0]])
+        }
+        console.log(c)
+        if (c.geometries[0].type === 'Point') {
+          L.circle([c.geometries[0].coordinates[1], c.geometries[0].coordinates[0]], 50000, {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5
+          }).addTo(mymap).bindPopup(c.title)
+        }
+      });
+
+      countries.forEach(c => {
+        console.log(c)
+        L.circle([c.LAT, c.LOG], 50000, {
+          color: 'yellow',
+          fillColor: '#ff0',
+          fillOpacity: 0.5
+        }).addTo(mymap).bindPopup(c.NM)
+      })
+    }
+
+
