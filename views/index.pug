@@ -6,7 +6,7 @@ block content
   script.
 
     async function getLocations() {
-      const points = await  fetch('https://eonet.sci.gsfc.nasa.gov/api/v2.1/events').then((resp) => resp.json()).then(function (data) {
+      const points = await  fetch('https://sedac.ciesin.columbia.edu/mapping/hazards/').then((resp) => resp.json()).then(function (data) {
         return data
       })
 
